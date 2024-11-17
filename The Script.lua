@@ -157,10 +157,3 @@ function ScrollingAdd.Button(name)
     -- Update scrolling frame canvas size
     buttonFrame.CanvasSize = UDim2.new(0, 0, 0, buttonLayout.AbsoluteContentSize.Y)
 end
-
--- Example Usage
-ScrollingAdd.Button("ExampleButton")
-ScrollingAdd["ExampleButton"].AddButton({ NAME = "RunExample" })
-ScrollingAdd["RunExample"].Script = function()
-    print("RunExample button script executed!")
-end
