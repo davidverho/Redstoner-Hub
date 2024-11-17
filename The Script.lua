@@ -1,3 +1,5 @@
+local RedstonerHub = {}
+
 -- Variables
 local player = game.Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
@@ -20,51 +22,6 @@ mainFrame.ClipsDescendants = true
 -- Add UICorner for rounded edges
 local corner = Instance.new("UICorner", mainFrame)
 corner.CornerRadius = UDim.new(0, 12)
-
--- Draggable functionality
-local UIS = game:GetService("UserInputService")
-local dragging, dragInput, dragStart, startPos
-
-mainFrame.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = mainFrame.Position
-
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-mainFrame.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-UIS.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        local delta = input.Position - dragStart
-        mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    end
-end)
-
--- Create title label
-local title = Instance.new("TextLabel", mainFrame)
-title.Name = "Title"
-title.Size = UDim2.new(1, 0, 0, 30)
-title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-title.BorderSizePixel = 0
-title.Text = "Redstoner Hub"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.Font = Enum.Font.SourceSans
-title.TextSize = 20
-
-local titleCorner = Instance.new("UICorner", title)
-titleCorner.CornerRadius = UDim.new(0, 12)
 
 -- Scrolling Frame for buttons
 local buttonFrame = Instance.new("ScrollingFrame", mainFrame)
@@ -89,10 +46,7 @@ contentFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 contentFrame.BorderSizePixel = 0
 
 -- ScrollingAdd API
-local ScrollingAdd = {}
-
--- Function to add buttons
-function ScrollingAdd.Button(name)
+function RedstonerHub.AddButton(name)
     local button = Instance.new("TextButton", buttonFrame)
     button.Name = name
     button.Size = UDim2.new(0.9, 0, 0, 40)
@@ -126,7 +80,7 @@ function ScrollingAdd.Button(name)
 
     -- API for content buttons
     local buttonAPI = {}
-    function buttonAPI.AddButton(props)
+    function buttonAPI.AddContentButton(props)
         local contentButton = Instance.new("TextButton", buttonContent)
         contentButton.Name = props.NAME or "NewButton"
         contentButton.Size = UDim2.new(0.8, 0, 0, 40)
@@ -138,22 +92,17 @@ function ScrollingAdd.Button(name)
         contentButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 
         -- API for script handling
-        local contentAPI = {}
-        setmetatable(contentAPI, {
+        setmetatable(buttonAPI, {
             __newindex = function(_, key, value)
                 if key == "Script" then
                     contentButton.MouseButton1Click:Connect(value)
                 end
             end
         })
-
-        -- Return button API
-        ScrollingAdd[props.NAME] = contentAPI
     end
 
-    -- Store button API
-    ScrollingAdd[name] = buttonAPI
-
-    -- Update scrolling frame canvas size
-    buttonFrame.CanvasSize = UDim2.new(0, 0, 0, buttonLayout.AbsoluteContentSize.Y)
+    return buttonAPI
 end
+
+-- Return API
+return RedstonerHub
