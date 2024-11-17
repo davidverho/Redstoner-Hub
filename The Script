@@ -23,6 +23,48 @@ mainFrame.ClipsDescendants = true
 local corner = Instance.new("UICorner", mainFrame)
 corner.CornerRadius = UDim.new(0, 12)
 
+-- Create title label
+local title = Instance.new("TextLabel", mainFrame)
+title.Name = "Title"
+title.Size = UDim2.new(1, 0, 0, 30)
+title.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+title.BorderSizePixel = 0
+title.Text = "Redstoner Hub"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.SourceSans
+title.TextSize = 20
+
+-- Add rounded corners to the title
+local titleCorner = Instance.new("UICorner", title)
+titleCorner.CornerRadius = UDim.new(0, 12)
+
+-- Draggable functionality for the main frame
+local UIS = game:GetService("UserInputService")
+local dragging, dragStart, startPos
+
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = mainFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        mainFrame.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + delta.X,
+            startPos.Y.Scale, startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
 -- Scrolling Frame for buttons
 local buttonFrame = Instance.new("ScrollingFrame", mainFrame)
 buttonFrame.Name = "ButtonFrame"
